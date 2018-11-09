@@ -6,7 +6,7 @@
 #
 
 git clone https://github.com/cocodataset/cocoapi.git
-cd PythonAPI
+cd cocoapi/PythonAPI
 make
 cp -r pycocotools /home/hlc/programs/anaconda3/lib/python3.6/site-packages/.
 
