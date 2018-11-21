@@ -17,6 +17,12 @@ from collections import OrderedDict
 import multiprocessing
 import numpy as np
 import tensorflow as tf
+
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+###-------------------  start importing keras module ---------------------
+
 import keras
 import keras.backend as K
 import keras.layers as KL
