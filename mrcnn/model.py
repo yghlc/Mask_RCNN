@@ -18,9 +18,10 @@ import multiprocessing
 import numpy as np
 import tensorflow as tf
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.Session(config=config)
+# this one seems can cause memory unreleased issues
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
+# session = tf.Session(config=config)
 ###-------------------  start importing keras module ---------------------
 
 import keras
