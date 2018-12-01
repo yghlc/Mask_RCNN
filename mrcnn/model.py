@@ -1496,10 +1496,28 @@ def build_rpn_targets(image_shape, anchors, gt_class_ids, gt_boxes, config):
     """
     # Generate negative anchors for sample that doesn't have instances
     if gt_class_ids.shape[0]==0:
-        # rpn_match = -1 * np.ones([anchors.shape[0]], dtype=np.int32)
-        rpn_match = np.zeros([anchors.shape[0]], dtype=np.int32)
-        neg_idx = np.random.randint(0,anchors.shape[0], config.RPN_TRAIN_ANCHORS_PER_IMAGE)
-        rpn_match[neg_idx] = -1
+        rpn_match = -1 * np.ones([anchors.shape[0]], dtype=np.int32)
+        # rpn_match = np.zeros([anchors.shape[0]], dtype=np.int32)
+        # neg_idx = np.random.randint(0,anchors.shape[0], config.RPN_TRAIN_ANCHORS_PER_IMAGE)
+        # rpn_match[neg_idx] = -1
+
+        # Subsample to balance positive and negative anchors
+        # Don't let positives be more than half the anchors
+        ids = np.where(rpn_match == 1)[0]
+        extra = len(ids) - (config.RPN_TRAIN_ANCHORS_PER_IMAGE // 2)
+        if extra > 0:
+            # Reset the extra ones to neutral
+            ids = np.random.choice(ids, extra, replace=False)
+            rpn_match[ids] = 0
+        # Same for negative proposals
+        ids = np.where(rpn_match == -1)[0]
+        extra = len(ids) - (config.RPN_TRAIN_ANCHORS_PER_IMAGE -
+                            np.sum(rpn_match == 1))
+        if extra > 0:
+            # Rest the extra ones to neutral
+            ids = np.random.choice(ids, extra, replace=False)
+            rpn_match[ids] = 0
+
         rpn_bbox = generate_random_rois(image_shape, \
             config.RPN_TRAIN_ANCHORS_PER_IMAGE, gt_class_ids, gt_boxes)
         # unique, counts = np.unique(rpn_match, return_counts=True)
